@@ -16,37 +16,33 @@ This AutoHotkey v2 script remaps your mouse side buttons to keyboard keys and ad
 - Prevents stuck keys and recursive input loops
 - Zero-delay processing for maximum responsiveness
 
-This script does not automate gameplay. Each physical press generates a single matching output.
+This script does not automate gameplay or work as a macro. Each physical press generates a single matching output.
 
 ---
 
 ## Setup Instructions
 
-### A: For users without AutoHotkey (ready-to-use executable)
+1. **Install AutoHotkey v2**  
+   - Download and install AutoHotkey v2 from [AutoHotkey](https://www.autohotkey.com/).
 
-1. Download the compiled `.exe` if included in your repository.  
-2. Save it anywhere convenient.  
-3. Run the file. Optionally place it in `shell:startup` to launch automatically on system startup.
+2. **Configure Fortnite Keybinds**  
+   - Set your Fortnite Build Binds from your side buttons to **Z** and **X** or whatever you modify it to inside the script
+   > (don't worry you will still use your mouse sidebuttons for building.
 
----
-
-### B: For AutoHotkey v2 users (recommended for custom tweaks)
-
-1. Install AutoHotkey v2.  
-2. Download or clone this repository.  
-3. Open `src/build_switch.ahk`.  
-4. Run it with AutoHotkey v2. Optionally place it in `shell:startup` to start automatically.
+3. **Save and Run the Script**  
+   - Save the `.ahk` file anywhere convenient.  
+   - Run it with AutoHotkey v2. Optionally, place it in `shell:startup` to start automatically on login.
 
 ---
 
 ## Configuration
 
-Adjust the output keys to match your Fortnite build keybinds:
+Adjust the output keys to match your Fortnite build keybinds if needed:
 
-\`\`\`ahk
+```ahk
 outKey1 := "z"
 outKey2 := "x"
-\`\`\`
+```
 
 These values must match the keys assigned to your building pieces inside Fortnite.
 
@@ -63,16 +59,6 @@ Useful for fast building sequences such as:
 - Wall → Stair → Wall  
 - Floor → Stair → Floor  
 - Any quick temporary structure swap during fights or movement
-
----
-
-## Hotkeys Overview
-
-| Action                                 | Input                   |
-| -------------------------------------- | ----------------------- |
-| Hold primary build piece               | XButton1 (mapped to Z)  |
-| Hold temporary build piece             | XButton2 (mapped to X)  |
-| Automatic return to original build     | Release temporary key   |
 
 ---
 
