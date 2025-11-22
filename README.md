@@ -62,6 +62,12 @@ Useful for fast building sequences such as:
 
 ---
 
+## Why This Script Exists
+
+I created this to fix an issue where holding Wall and tapping Stair wouldn’t return to Wall afterward. Even though the Wall key was still held down, Fortnite didn’t switch back, so this script solves that behavior.
+
+---
+
 ## Notes
 
 - Designed for players using mouse side buttons (XButton1 / XButton2) for building.  
