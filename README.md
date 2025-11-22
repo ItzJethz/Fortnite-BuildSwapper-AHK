@@ -68,6 +68,13 @@ I created this to fix an issue where holding Wall and tapping Stair wouldn’t r
 
 ---
 
+## Safety Notes
+
+This script stays fully within normal input rules. It doesn’t automate sequences, add delays, or trigger actions you aren’t physically pressing — it only manages the keys you’re already holding down. That keeps it functionally identical to standard keyboard behavior.  
+Still, use it at your own risk since any third-party software can be interpreted differently depending on the game or platform.
+
+---
+
 ## Notes
 
 - Designed for players using mouse side buttons (XButton1 / XButton2) for building.  
