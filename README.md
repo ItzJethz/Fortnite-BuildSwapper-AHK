@@ -27,7 +27,7 @@ This script does not automate gameplay or work as a macro. Each physical press g
 
 2. **Configure Fortnite Keybinds**  
    - Set your Fortnite Build Binds from your side buttons to **Z** and **X** or whatever you modify it to inside the script
-   > (don't worry you will still use your mouse sidebuttons for building.
+     > (You will still use your mouse side buttons. The script simply converts them into clean keyboard inputs.)
 
 3. **Save and Run the Script**  
    - Save the `.ahk` file anywhere convenient.  
