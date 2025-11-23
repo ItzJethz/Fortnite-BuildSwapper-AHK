@@ -15,6 +15,8 @@ This AutoHotkey v2 script remaps your mouse side buttons to keyboard keys and ad
 - Corrects inconsistent hardware behavior on some mice
 - Prevents stuck keys and recursive input loops
 - Zero-delay processing for maximum responsiveness
+- Autocloses when Fortnite is closed
+- Side buttons behaves normally when alt-tabbed
 
 This script does not automate gameplay or work as a macro. Each physical press generates a single matching output.
 
@@ -81,4 +83,3 @@ Still, use it at your own risk since any third-party software can be interpreted
 - Improves input consistency by guaranteeing clean press and release events.  
 - Zero-delay logic provides fast switching without artificial timing.  
 - Works on any mouse with standard side buttons.
-- Automatically closes after Fortnite closes.
