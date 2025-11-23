@@ -81,3 +81,4 @@ Still, use it at your own risk since any third-party software can be interpreted
 - Improves input consistency by guaranteeing clean press and release events.  
 - Zero-delay logic provides fast switching without artificial timing.  
 - Works on any mouse with standard side buttons.
+- Automatically closes after Fortnite closes.
