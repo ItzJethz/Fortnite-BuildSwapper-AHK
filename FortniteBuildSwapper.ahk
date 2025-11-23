@@ -1,4 +1,4 @@
-﻿#Requires AutoHotkey v2.0
+#Requires AutoHotkey v2.0
 #SingleInstance Force
 SendMode("Event")
 
@@ -9,7 +9,7 @@ outKey2 := "x"
 
 down1 := false
 down2 := false
-inCombo := false     ; reentrancy guard
+inCombo := false
 
 ; ---------------------------
 ; Tray setup
@@ -31,27 +31,15 @@ QuitScript(*) {
     ExitApp
 }
 
-; --- helper: safeTap(key, isCurrentlyDownVarRef) ---
-; Performs a visible tap even if the key is already down:
-; - if keyDown true: release it, do tap, then reapply down
-; - else: just do down/tap/up
 safeTap(key, &isDown) {
     global tapDelay, smallGap, inCombo
-    ; prevent recursive entry
     if inCombo
         return
     inCombo := true
 
-    if isDown {                      ; currently held: need to release first
+    if isDown {
         Send "{" key " up}"
         Sleep smallGap
-
-        Send "{" key " down}"
-        Sleep tapDelay
-        Send "{" key " up}"
-        Sleep smallGap
-
-        ; restore held state so the other button still behaves as held
         Send "{" key " down}"
         isDown := true
     } else {
@@ -75,7 +63,7 @@ X1_Down(*) {
 X1_Up(*) {
     global down1, down2, outKey1, outKey2
 
-    ; if we never saw Down, assume it happened (compatibility with flaky hardware)
+    ; if we never saw Down, assume it happened
     if !down1
         down1 := true
 
@@ -85,7 +73,6 @@ X1_Up(*) {
     Send "{" outKey1 " up}"
 
     if wasHeld2 {
-        ; perform a safe tap of outKey2 even though outKey2 is currently down
         safeTap(outKey2, &down2)
     }
 }
@@ -102,7 +89,6 @@ X2_Down(*) {
 X2_Up(*) {
     global down1, down2, outKey1, outKey2
 
-    ; if we never saw Down, assume it happened
     if !down2
         down2 := true
 
@@ -120,3 +106,20 @@ Hotkey "*XButton1", X1_Down
 Hotkey "*XButton1 Up", X1_Up
 Hotkey "*XButton2", X2_Down
 Hotkey "*XButton2 Up", X2_Up
+
+; --- Wait for Fortnite to start ---
+SetTimer WaitForFortnite, 500
+
+WaitForFortnite() {
+    if ProcessExist("FortniteClient-Win64-Shipping.exe") {
+        SetTimer WaitForFortnite, 0
+        SetTimer MonitorFortniteClose, 250
+    }
+}
+
+; --- Exit after Fortnite closes ---
+MonitorFortniteClose() {
+    if !ProcessExist("FortniteClient-Win64-Shipping.exe") {
+        ExitApp
+    }
+}
