@@ -2,41 +2,48 @@
 #SingleInstance Force
 SendMode("Event")
 
-tapDelay := 0        ; length of the tap (ms)
-smallGap := 0        ; tiny gap between synthetic events (ms)
-outKey1 := "z"
-outKey2 := "x"
+; ============================================================
+; CONFIG
+; ============================================================
+tapDelay  := 0
+smallGap  := 0
+outKey1   := "z"
+outKey2   := "x"
+fnExeName := "FortniteClient-Win64-Shipping.exe"
 
 down1 := false
 down2 := false
 inCombo := false
 
-; ---------------------------
-; Tray setup
-; ---------------------------
-A_TrayMenu.Delete()
-A_TrayMenu.Add("Edit", EditScript)
-A_TrayMenu.Add("Reload", ReloadScript)
-A_TrayMenu.Add("Quit", QuitScript)
-
-EditScript(*) {
-    Run(A_ComSpec ' /c code "' . A_ScriptFullPath . '"', , 'Hide')
+; ============================================================
+; FORTNITE WINDOW / PROCESS HANDLING
+; ============================================================
+isFNActive() {
+    global fnExeName
+    return WinActive("ahk_exe " fnExeName)
 }
 
-ReloadScript(*) {
-    Reload
+isFNRunning() {
+    global fnExeName
+    return ProcessExist(fnExeName)
 }
 
-QuitScript(*) {
-    ExitApp
+; ============================================================
+; SIMULATE REAL MOUSE BUTTONS
+; ============================================================
+sendNative(btn, state) {
+    Send "{" btn " " state "}"
 }
 
+; ============================================================
+; TAP / COMBO ENGINE
+; ============================================================
 safeTap(key, &isDown) {
     global tapDelay, smallGap, inCombo
     if inCombo
         return
-    inCombo := true
 
+    inCombo := true
     if isDown {
         Send "{" key " up}"
         Sleep smallGap
@@ -47,23 +54,21 @@ safeTap(key, &isDown) {
         Sleep tapDelay
         Send "{" key " up}"
     }
-
     inCombo := false
 }
 
-; ------------------------
-; XBUTTON1 → Z
-; ------------------------
-X1_Down(*) {
+; ============================================================
+; OUTPUT HANDLERS FOR FORTNITE CONTEXT
+; ============================================================
+handleFN_X1_Down(*) {
     global down1, outKey1
     down1 := true
     Send "{" outKey1 " down}"
 }
 
-X1_Up(*) {
+handleFN_X1_Up(*) {
     global down1, down2, outKey1, outKey2
 
-    ; if we never saw Down, assume it happened
     if !down1
         down1 := true
 
@@ -72,21 +77,17 @@ X1_Up(*) {
 
     Send "{" outKey1 " up}"
 
-    if wasHeld2 {
+    if wasHeld2
         safeTap(outKey2, &down2)
-    }
 }
 
-; ------------------------
-; XBUTTON2 → X
-; ------------------------
-X2_Down(*) {
+handleFN_X2_Down(*) {
     global down2, outKey2
     down2 := true
     Send "{" outKey2 " down}"
 }
 
-X2_Up(*) {
+handleFN_X2_Up(*) {
     global down1, down2, outKey1, outKey2
 
     if !down2
@@ -97,29 +98,67 @@ X2_Up(*) {
 
     Send "{" outKey2 " up}"
 
-    if wasHeld1 {
+    if wasHeld1
         safeTap(outKey1, &down1)
-    }
 }
 
-Hotkey "*XButton1", X1_Down
+; ============================================================
+; ROUTER -> DECIDES BEHAVIOR BASED ON FORTNITE FOCUS
+; ============================================================
+X1_Down(*) {
+    if isFNActive()
+        return handleFN_X1_Down()
+    sendNative("XButton1", "down")
+}
+
+X1_Up(*) {
+    if isFNActive()
+        return handleFN_X1_Up()
+    sendNative("XButton1", "up")
+}
+
+X2_Down(*) {
+    if isFNActive()
+        return handleFN_X2_Down()
+    sendNative("XButton2", "down")
+}
+
+X2_Up(*) {
+    if isFNActive()
+        return handleFN_X2_Up()
+    sendNative("XButton2", "up")
+}
+
+
+; ============================================================
+; HOTKEY BINDINGS
+; ============================================================
+Hotkey "*XButton1",    X1_Down
 Hotkey "*XButton1 Up", X1_Up
-Hotkey "*XButton2", X2_Down
+Hotkey "*XButton2",    X2_Down
 Hotkey "*XButton2 Up", X2_Up
 
-; --- Wait for Fortnite to start ---
-SetTimer WaitForFortnite, 500
+; ============================================================
+; AUTOEXIT HANDLER
+; ============================================================
+SetTimer(fnWaitLoop, 500)
 
-WaitForFortnite() {
-    if ProcessExist("FortniteClient-Win64-Shipping.exe") {
-        SetTimer WaitForFortnite, 0
-        SetTimer MonitorFortniteClose, 250
+fnWaitLoop() {
+    if isFNRunning() {
+        SetTimer fnWaitLoop, 0
+        SetTimer fnCloseMonitor, 250
     }
 }
 
-; --- Exit after Fortnite closes ---
-MonitorFortniteClose() {
-    if !ProcessExist("FortniteClient-Win64-Shipping.exe") {
+fnCloseMonitor() {
+    if !isFNRunning()
         ExitApp
-    }
 }
+
+; ============================================================
+; TRAY MENU
+; ============================================================
+A_TrayMenu.Delete()
+A_TrayMenu.Add("Edit",  (*) => Run(A_ComSpec ' /c code "' . A_ScriptFullPath . '"', , 'Hide'))
+A_TrayMenu.Add("Reload", (*) => Reload())
+A_TrayMenu.Add("Quit",   (*) => ExitApp())
